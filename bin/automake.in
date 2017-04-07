@@ -387,6 +387,7 @@ my %required_targets =
    'tags-am'         => 1,
    'ctags-am'        => 1,
    'cscopelist-am'   => 1,
+   'compilecommandslist-am'   => 1,
    'install-man'     => 1,
   );
 
@@ -3583,7 +3584,8 @@ sub handle_tags ()
         $output_rules .=
           "tags TAGS:\n\n" .
           "ctags CTAGS:\n\n" .
-          "cscope cscopelist:\n\n";
+          "cscope cscopelist:\n\n" .
+          "compilecommands compilecommandslist:\n\n";
       }
 }
 

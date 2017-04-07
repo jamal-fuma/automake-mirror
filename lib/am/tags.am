@@ -168,6 +168,42 @@ cscopelist-am: $(am__tagged_files)
 	  fi; \
 	done >> $(top_builddir)/cscope.files
 
+## ----------------- ##
+## compile_commands  ##
+## ----------------- ##
+
+if %?TOPDIR_P%
+COMPILE_CMDS = cat
+.PHONY: compilecommands clean-compilecommands
+AM_RECURSIVE_TARGETS += compilecommands
+compilecommands: compilecommands.files
+	test ! -s compilecommands.files \
+	  || $(COMPILE_CMDS) $(AM_COMPILE_CMDSFLAGS) $(COMPILE_CMDSFLAGS) < compilecommands.files > compile_commands.json
+clean-compilecommands:
+	-rm -f compilecommands.files
+compilecommands.files: clean-compilecommands compilecommandslist
+endif %?TOPDIR_P%
+
+if %?SUBDIRS%
+RECURSIVE_TARGETS += compilecommandslist-recursive
+compilecommandslist: compilecommandslist-recursive
+else !%?SUBDIRS%
+compilecommandslist: compilecommandslist-am
+endif !%?SUBDIRS%
+
+compilecommandslist-am: $(am__tagged_files)
+	list='$(am__tagged_files)'; \
+	case "$(srcdir)" in \
+	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
+	  *) sdir=$(subdir)/$(srcdir) ;; \
+	esac; \
+	for i in $$list; do \
+	  if test -f "$$i"; then \
+	    echo "{\"directory\":\"$(subdir)\",\"file\":\"$(subdir)/$$i\"}"; \
+	  else \
+	    echo "{\"directory\":\"$$sdir\",\"file\":\"$$sdir/$$i\"}"; \
+	  fi; \
+	done >> $(top_builddir)/compilecommands.files
 
 ## ---------- ##
 ## Cleaning.  ##
@@ -178,5 +214,5 @@ cscopelist-am: $(am__tagged_files)
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 if %?TOPDIR_P%
-	-rm -f cscope.out cscope.in.out cscope.po.out cscope.files
+	-rm -f cscope.out cscope.in.out cscope.po.out cscope.files compilecommands.files compile_commands.json
 endif %?TOPDIR_P%
