@@ -175,6 +175,7 @@ cscopelist-am: $(am__tagged_files)
 if %?TOPDIR_P%
 COMPILE_CMDS_1 = sed -e ':a' -e 'N;s/\n/,\n/;ba'
 COMPILE_CMDS_2 = sed -e '1{s/^/[/;}; $${s/$$/]/;}'
+COMPILE_CMDS_3 = sed -e 's/"/\\\\"/g'
 .PHONY: compilecommands clean-compilecommands
 AM_RECURSIVE_TARGETS += compilecommands
 compilecommands: compilecommands.files
@@ -199,7 +200,8 @@ compilecommandslist-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
         fullname=`realpath "$$here/$$subdir/$$i"`; \
         basename=`basename $$fullname` ;\
         dirname=`dirname $$fullname` ;\
-        echo "{\"command\":\"$$basename\",\"directory\":\"$$dirname\",\"file\":\"$$fullname\"}"; \
+        cmd=`echo $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) | $(COMPILE_CMDS_3)` ;\
+        echo "{\"command\":\"$$cmd\",\"directory\":\"$$dirname\",\"file\":\"$$fullname\"}"; \
     done >> $(top_builddir)/compilecommands.files
 
 ## ---------- ##
