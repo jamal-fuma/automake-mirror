@@ -192,19 +192,15 @@ else !%?SUBDIRS%
 compilecommandslist: compilecommandslist-am
 endif !%?SUBDIRS%
 
-compilecommandslist-am: $(am__tagged_files)
-	list='$(am__tagged_files)'; \
-	case "$(srcdir)" in \
-	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
-	  *) sdir=$(subdir)/$(srcdir) ;; \
-	esac; \
-	for i in $$list; do \
-	  if test -f "$$i"; then \
-	    echo "{\"command\":\"\",\"directory\":\"$(subdir)\",\"file\":\"$(subdir)/$$i\"}"; \
-	  else \
-	    echo "{\"command\":\"\",\"directory\":\"$$sdir\",\"file\":\"$$sdir/$$i\"}"; \
-	  fi; \
-	done >> $(top_builddir)/compilecommands.files
+compilecommandslist-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+	$(am__define_uniq_tagged_files); \
+    here=`pwd` ; \
+	for i in $$unique; do \
+        fullname=`realpath "$$here/$$subdir/$$i"`; \
+        basename=`basename $$fullname` ;\
+        dirname=`dirname $$fullname` ;\
+        echo "{\"command\":\"$$basename\",\"directory\":\"$$dirname\",\"file\":\"$$fullname\"}"; \
+    done >> $(top_builddir)/compilecommands.files
 
 ## ---------- ##
 ## Cleaning.  ##
