@@ -173,12 +173,13 @@ cscopelist-am: $(am__tagged_files)
 ## ----------------- ##
 
 if %?TOPDIR_P%
-COMPILE_CMDS = cat
+COMPILE_CMDS_1 = sed -e ':a' -e 'N;s/\n/,\n/;ba'
+COMPILE_CMDS_2 = sed -e '1{s/^/[/;}; $${s/$$/]/;}'
 .PHONY: compilecommands clean-compilecommands
 AM_RECURSIVE_TARGETS += compilecommands
 compilecommands: compilecommands.files
 	test ! -s compilecommands.files \
-	  || $(COMPILE_CMDS) $(AM_COMPILE_CMDSFLAGS) $(COMPILE_CMDSFLAGS) < compilecommands.files > compile_commands.json
+	  || $(COMPILE_CMDS_1) compilecommands.files | $(COMPILE_CMDS_2) > compile_commands.json
 clean-compilecommands:
 	-rm -f compilecommands.files
 compilecommands.files: clean-compilecommands compilecommandslist
@@ -199,9 +200,9 @@ compilecommandslist-am: $(am__tagged_files)
 	esac; \
 	for i in $$list; do \
 	  if test -f "$$i"; then \
-	    echo "{\"directory\":\"$(subdir)\",\"file\":\"$(subdir)/$$i\"}"; \
+	    echo "{\"command\":\"\",\"directory\":\"$(subdir)\",\"file\":\"$(subdir)/$$i\"}"; \
 	  else \
-	    echo "{\"directory\":\"$$sdir\",\"file\":\"$$sdir/$$i\"}"; \
+	    echo "{\"command\":\"\",\"directory\":\"$$sdir\",\"file\":\"$$sdir/$$i\"}"; \
 	  fi; \
 	done >> $(top_builddir)/compilecommands.files
 
